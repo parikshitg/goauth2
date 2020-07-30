@@ -24,6 +24,7 @@ func main() {
 
 	log.Println("DB Connected Successfully")
 
+	models.Db.Debug().DropTableIfExists(&models.User{})
 	// Create Table
 	models.Db.AutoMigrate(&models.User{})
 

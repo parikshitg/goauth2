@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/parikshitg/goauth2/models"
 )
 
 // Register handler
@@ -20,10 +22,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
-		username := r.FormValue("username")
+		name := r.FormValue("name")
+		email := r.FormValue("email")
 		password := r.FormValue("password")
 		password2 := r.FormValue("password2")
-		log.Println("username : ", username, "password : ", password,"password2 : ", password2)
+		log.Println("name : ", name, "email : ", email, "password : ", password, "password2 : ", password2)
+
+		models.CreateUser(name, email, password)
 	}
 
 	err = page.Execute(w, data)
