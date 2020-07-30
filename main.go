@@ -11,6 +11,8 @@ func main() {
 	// Routes
 	http.HandleFunc("/", h.Home)
 	http.HandleFunc("/login", h.Login)
+	http.HandleFunc("/github/login",h.GithubLogin)
+	http.HandleFunc("/github/callback", h.GithubCallback)
 	http.HandleFunc("/dashboard", h.Dashboard)
 
 	// Serving static files
