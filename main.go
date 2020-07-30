@@ -14,6 +14,7 @@ func main() {
 	http.HandleFunc("/github/login",h.GithubLogin)
 	http.HandleFunc("/github/callback", h.GithubCallback)
 	http.HandleFunc("/dashboard", h.Dashboard)
+	http.HandleFunc("/register", h.Register)
 
 	// Serving static files
 	http.Handle("/css/", http.StripPrefix("/css", http.FileServer(http.Dir("static/css"))))
