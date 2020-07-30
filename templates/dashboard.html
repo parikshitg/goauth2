@@ -1,5 +1,27 @@
 {{ template "header.html" . }}
 
-<h1>Dashboard</h1>
+<h3>Dashboard</h3>
 
+<div class="container">
+	<table class="highlight">
+		<thead>
+		  <tr>
+		      <th>ID</th>
+		      <th>Name</th>
+		      <th>Email</th>
+		  </tr>
+		</thead>
+
+		<tbody>
+			{{ range $i,$u := .Users }}
+			<tr>
+			    <td>{{ $u.ID }}</td>
+			    <td>{{ $u.Name }}</td>
+			    <td>{{ $u.Email }}</td>
+			</tr>
+			{{ end }}
+		</tbody>
+	</table>
+</div>
+<br><br><br><br><br><br><br><br><br><br><br>      
 {{ template "footer.html" . }}

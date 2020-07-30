@@ -8,7 +8,7 @@ import (
 var Db *gorm.DB
 
 type User struct {
-	gorm.Model
+	ID       int `gorm:"primary_key";"AUTO_INCREMENT"`
 	Name     string
 	Email    string
 	Meta     string
@@ -20,7 +20,7 @@ func CreateUser(name, email, password string) {
 
 	user := &User{Name: name, Email: email, Password: password}
 
-	Db.Debug().Create(user)
+	Db.Debug().Create(&user)
 }
 
 // Check if user exists in database
@@ -32,4 +32,13 @@ func ExistingUser(email string) bool {
 		return false
 	}
 	return true
+}
+
+// Read All Users from the database
+func UsersTable() []User {
+
+	var users []User
+	Db.Debug().Select("id, name, email").Find(&users)
+
+	return users
 }

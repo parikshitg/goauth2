@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/parikshitg/goauth2/models"
 )
 
 // Dashboard Handler
@@ -17,6 +19,9 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 		log.Println("ParseFiles: ", err)
 		return
 	}
+
+	userList := models.UsersTable()
+	data["Users"] = userList
 
 	err = page.Execute(w, data)
 	if err != nil {
