@@ -18,6 +18,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if r.Method == http.MethodPost {
+
+		username := r.FormValue("username")
+		password := r.FormValue("password")
+		log.Println("username : ", username, "password : ", password)
+	}
+
 	err = page.Execute(w, data)
 	if err != nil {
 		log.Fatal("Execute:", err)

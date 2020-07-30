@@ -1,16 +1,33 @@
 {{ template "header.html" . }}
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
+<br>
 <div class="container">
     <div class="row">
         <div class="col s12 m6 offset-m3">
             <div class="card">
                 <div class="card-content">
-                    <span class="card-title center purple-text">LOGIN</span><br><br>
+                    <span class="card-title center purple-text">LOGIN</span>
+                        <form method="post" action="/login">
+                            <div class="row">
+                                <div class="input-field col s12">
+                                <i class="material-icons prefix">person</i>
+                                    <input name="username" id="username" type="text" class="validate">
+                                    <label for="username">Username</label>
+                                </div>
+                            </div> 
+                            <div class="row">
+                                <div class="input-field col s12">
+                                    <i class="material-icons prefix">lock</i>
+                                    <input name="password" id="password" type="password" class="validate">
+                                    <label for="password">Password</label>
+                                </div>
+                            </div>
+                            <div class="card-action center ">
+                                <input type="submit" class="btn purple darken-2" value="Login">
+                            </div>
+                        </form>
+                        
+                    <hr>
+
                     <div class="center">   
                         <a class="waves-effect waves-light btn-large grey darken-4" href="/github/login"><i class="fab fa-github"></i> Login with Github</a> 
 	                    <br><br>
@@ -23,11 +40,4 @@
         </div>
     </div>
 </div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
-<div class="row"></div>
 {{ template "footer.html" . }}
