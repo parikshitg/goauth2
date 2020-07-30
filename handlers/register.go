@@ -8,6 +8,12 @@ import (
 	"github.com/parikshitg/goauth2/models"
 )
 
+type Flash struct {
+	Message string
+}
+
+var flash Flash
+
 // Register handler
 func Register(w http.ResponseWriter, r *http.Request) {
 
@@ -26,18 +32,41 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 		password2 := r.FormValue("password2")
-		log.Println("name : ", name, "email : ", email, "password : ", password, "password2 : ", password2)
 
-		ok := models.ExistingUser(email)
-		if ok {
-			log.Println("User Existing already")
-		} else {
-			models.CreateUser(name, email, password)
-		}
+		// Register the User
+		res := RegisterUser(name, email, password, password2)
+		data["Flash"] = res
+		log.Println("flash message : ", res)
 	}
 
 	err = page.Execute(w, data)
 	if err != nil {
 		log.Fatal("Execute:", err)
 	}
+}
+
+// Registers User
+func RegisterUser(name, email, password, password2 string) string {
+
+	if name == "" || email == "" || password == "" || password2 == "" {
+
+		flash.Message = "Fields Can not be empty !!"
+		return flash.Message
+	}
+
+	ok := models.ExistingUser(email)
+	if ok {
+		flash.Message = "User Already Registered !!"
+		return flash.Message
+	}
+
+	if password != password2 {
+		flash.Message = "Passwords Doesn't Match !!"
+		return flash.Message
+	}
+
+	models.CreateUser(name, email, password)
+	flash.Message = "Registered Successfully."
+
+	return flash.Message
 }
