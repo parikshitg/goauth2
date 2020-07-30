@@ -1,8 +1,6 @@
 package models
 
 import (
-	"log"
-
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -23,4 +21,15 @@ func CreateUser(name, email, password string) {
 	user := &User{Name: name, Email: email, Password: password}
 
 	Db.Debug().Create(user)
+}
+
+// Check if user exists in database
+func ExistingUser(email string) bool {
+
+	var user User
+	Db.Debug().Where("email = ?", email).Find(&user)
+	if user == (User{}) {
+		return false
+	}
+	return true
 }

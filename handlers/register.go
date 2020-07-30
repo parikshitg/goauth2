@@ -28,7 +28,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		password2 := r.FormValue("password2")
 		log.Println("name : ", name, "email : ", email, "password : ", password, "password2 : ", password2)
 
-		models.CreateUser(name, email, password)
+		ok := models.ExistingUser(email)
+		if ok {
+			log.Println("User Existing already")
+		} else {
+			models.CreateUser(name, email, password)
+		}
 	}
 
 	err = page.Execute(w, data)
