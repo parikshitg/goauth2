@@ -8,7 +8,7 @@ import (
 var Db *gorm.DB
 
 type User struct {
-	ID       int `gorm:"primary_key";"AUTO_INCREMENT"`
+	gorm.Model
 	Name     string
 	Email    string
 	Meta     string

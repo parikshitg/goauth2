@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/parikshitg/goauth2/models"
+	s "github.com/parikshitg/goauth2/sessions"
 )
 
 // Login handler
@@ -35,6 +36,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// setting up a session
+		session, err := s.Store.Get(r, "auth-cookie")
+		if err != nil {
+			log.Println("Session Error:", err)
+		}
+		session.Values["authenticated"] = true
+		session.Save(r, w)
+
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 	}
 
@@ -44,7 +53,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Logins User
+// Logins the User
 func LoginUser(email, password string) (string, bool) {
 
 	if email == "" || password == "" {

@@ -8,6 +8,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	h "github.com/parikshitg/goauth2/handlers"
 	"github.com/parikshitg/goauth2/models"
+	"github.com/parikshitg/goauth2/sessions"
 )
 
 func main() {
@@ -30,11 +31,11 @@ func main() {
 
 	// Routes
 	http.HandleFunc("/", h.Home)
-	http.HandleFunc("/login", h.Login)
+	http.HandleFunc("/login", sessions.UnauthenticatedUser(h.Login))
 	http.HandleFunc("/github/login", h.GithubLogin)
 	http.HandleFunc("/github/callback", h.GithubCallback)
-	http.HandleFunc("/dashboard", h.Dashboard)
-	http.HandleFunc("/register", h.Register)
+	http.HandleFunc("/dashboard", sessions.AuthenticatedUser(h.Dashboard))
+	http.HandleFunc("/register", sessions.UnauthenticatedUser(h.Register))
 
 	// Serving static files
 	http.Handle("/css/", http.StripPrefix("/css", http.FileServer(http.Dir("static/css"))))
