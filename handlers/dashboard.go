@@ -14,7 +14,7 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	data := make(map[string]interface{})
 	data["title"] = "Dashboard"
 
-	page, err := template.ParseFiles("templates/dashboard.html", "templates/footer.html", "templates/header.html")
+	page, err := template.ParseFiles("templates/dashboard.html", "templates/footer.html", "templates/header2.html")
 	if err != nil {
 		log.Println("ParseFiles: ", err)
 		return
