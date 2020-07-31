@@ -37,16 +37,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		user := models.ReadUser(email)
+
 		// setting up a session
 		session, err := s.Store.Get(r, "auth-cookie")
 		if err != nil {
 			log.Println("Session Error:", err)
 			return
 		}
-		session.Values["authenticated"] = true
+		session.Values["User"] = user.Name
 		session.Save(r, w)
 
-		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		http.Redirect(w, r, "/user/all", http.StatusSeeOther)
+		return
 	}
 
 	err = page.Execute(w, data)

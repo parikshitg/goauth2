@@ -42,3 +42,11 @@ func UsersTable() []User {
 
 	return users
 }
+
+// Read a user
+func ReadUser(email string) User {
+
+	var user User
+	Db.Debug().Where("email = ?", email).Find(&user)
+	return user
+}

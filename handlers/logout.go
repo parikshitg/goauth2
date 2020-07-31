@@ -10,7 +10,7 @@ import (
 func Logout(w http.ResponseWriter, r *http.Request) {
 	session, _ := s.Store.Get(r, "auth-cookie")
 
-	session.Values["authenticated"] = false
+	session.Values["User"] = ""
 	session.Options.MaxAge = -1
 	session.Save(r, w)
 

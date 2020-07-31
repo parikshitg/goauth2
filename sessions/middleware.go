@@ -16,9 +16,9 @@ func AuthenticatedUser(f http.HandlerFunc) http.HandlerFunc {
 
 		session, _ := Store.Get(r, "auth-cookie")
 
-		cookie, ok := session.Values["authenticated"]
+		cookie, ok := session.Values["User"]
 
-		if cookie == true && ok {
+		if cookie != "" && ok {
 			f(w, r)
 			return
 		}
@@ -34,10 +34,10 @@ func UnauthenticatedUser(f http.HandlerFunc) http.HandlerFunc {
 
 		session, _ := Store.Get(r, "auth-cookie")
 
-		cookie, ok := session.Values["authenticated"]
+		cookie, ok := session.Values["User"]
 
-		if cookie == true && ok {
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
+		if cookie != "" && ok {
+			http.Redirect(w, r, "/user/all", http.StatusSeeOther)
 			return
 		}
 

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/parikshitg/goauth2/models"
+	s "github.com/parikshitg/goauth2/sessions"
 )
 
 // Dashboard Handler
@@ -20,6 +21,11 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session, _ := s.Store.Get(r, "auth-cookie")
+	username, _ := session.Values["User"]
+	data["User"] = username
+
+	// Display List of Users
 	userList := models.UsersTable()
 	data["Users"] = userList
 
