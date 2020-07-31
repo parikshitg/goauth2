@@ -1,0 +1,41 @@
+{{ template "header2.html" . }}
+
+<div class="container">
+	<h3>Search user</h3>
+	<br>
+	<p class="teal-text">{{ .Message }}</p>
+	<br>
+	{{ with .Details }}
+	<table class="highlight">
+		<thead>
+		  <tr>
+		      <th>ID</th>
+		      <th>Name</th>
+		      <th>Email</th>
+		  </tr>
+		</thead>
+
+		<tbody>
+			<tr>
+			    <td>{{ .ID }}</td>
+			    <td>{{ .Name }}</td>
+			    <td>{{ .Email }}</td>
+			</tr>
+		</tbody>
+	</table>
+	{{ end }}
+	<form method="post" action="/user/search">
+	    <div class="row">
+	        <div class="input-field col s12">
+	        <i class="material-icons prefix">search</i>  
+	            <input name="email" id="email" type="text" class="validate">
+	            <label for="email">Enter User Email Id</label>
+	        </div>
+	    </div> 
+	    <div class="card-action center ">
+	        <input type="submit" class="btn purple darken-2" value="Search">
+	    </div>
+	</form>
+</div>
+     <br>
+{{ template "footer.html" . }}

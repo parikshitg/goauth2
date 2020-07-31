@@ -24,14 +24,14 @@ func CreateUser(name, email, password string) {
 }
 
 // Check if user exists in database
-func ExistingUser(email string) (string, bool) {
+func ExistingUser(email string) (User, bool) {
 
 	var user User
 	Db.Debug().Where("email = ?", email).Find(&user)
 	if user == (User{}) {
-		return "", false
+		return User{}, false
 	}
-	return user.Password, true
+	return user, true
 }
 
 // Read All Users from the database
@@ -41,12 +41,4 @@ func UsersTable() []User {
 	Db.Debug().Select("id, name, email").Find(&users)
 
 	return users
-}
-
-// Read a user
-func ReadUser(email string) User {
-
-	var user User
-	Db.Debug().Where("email = ?", email).Find(&user)
-	return user
 }

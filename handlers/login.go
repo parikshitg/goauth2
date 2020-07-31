@@ -37,7 +37,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		user := models.ReadUser(email)
+		user, _ := models.ExistingUser(email)
 
 		// setting up a session
 		session, err := s.Store.Get(r, "auth-cookie")
@@ -67,14 +67,14 @@ func LoginUser(email, password string) (string, bool) {
 		return flash.Message, false
 	}
 
-	pass, exists := models.ExistingUser(email)
+	user, exists := models.ExistingUser(email)
 	if !exists {
 
 		flash.Message = "Invalid Email !!"
 		return flash.Message, false
 	}
 
-	if password != pass {
+	if password != user.Password {
 		flash.Message = "Invalid User !!"
 		return flash.Message, false
 	}

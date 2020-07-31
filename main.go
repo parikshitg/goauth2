@@ -35,6 +35,7 @@ func main() {
 	http.HandleFunc("/github/login", h.GithubLogin)
 	http.HandleFunc("/github/callback", h.GithubCallback)
 	http.HandleFunc("/user/all", sessions.AuthenticatedUser(h.Dashboard))
+	http.HandleFunc("/user/search", sessions.AuthenticatedUser(h.Search))
 	http.HandleFunc("/register", sessions.UnauthenticatedUser(h.Register))
 	http.HandleFunc("/logout", sessions.AuthenticatedUser(h.Logout))
 
