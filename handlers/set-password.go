@@ -10,7 +10,7 @@ import (
 )
 
 // SetPassword Handler
-func SetPassword(w http.ResponseWriter, r *http.Request) {
+func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := make(map[string]interface{})
 	data["title"] = "Set Password"
@@ -28,10 +28,45 @@ func SetPassword(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
-		// password := r.FormValue("password")
-		// password2 := r.FormValue("password2")
-		// password3 := r.FormValue("password3")
+		password := r.FormValue("password")
+		password2 := r.FormValue("password2")
+		password3 := r.FormValue("password3")
 
+		if password == "" || password2 == "" || password3 == "" {
+
+			data["Flash"] = "Fields can not be Empty !!"
+
+			err = page.Execute(w, data)
+			if err != nil {
+				log.Fatal("Execute:", err)
+			}
+			return
+		}
+
+		if password2 != password3 {
+
+			data["Flash"] = "New Passwords Did not match !!"
+
+			err = page.Execute(w, data)
+			if err != nil {
+				log.Fatal("Execute:", err)
+			}
+			return
+		}
+
+		if password != user.Password {
+
+			data["Flash"] = "Invalid Current Password !!"
+
+			err = page.Execute(w, data)
+			if err != nil {
+				log.Fatal("Execute:", err)
+			}
+			return
+		}
+
+		models.SetNewPass(useremail.(string), password2)
+		data["Flash"] = "Password Updated."
 	}
 
 	err = page.Execute(w, data)

@@ -42,3 +42,8 @@ func UsersTable() []User {
 
 	return users
 }
+
+// Set Users New Password in Database
+func SetNewPass(email, pass string) {
+	Db.Debug().Table("users").Where("email = ?", email).Update("password", pass)
+}
