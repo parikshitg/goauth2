@@ -45,7 +45,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			log.Println("Session Error:", err)
 			return
 		}
-		session.Values["User"] = user.Name
+		session.Values["Useremail"] = user.Email
 		session.Save(r, w)
 
 		http.Redirect(w, r, "/user/all", http.StatusSeeOther)

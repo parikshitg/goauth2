@@ -22,8 +22,9 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	session, _ := s.Store.Get(r, "auth-cookie")
-	username, _ := session.Values["User"]
-	data["User"] = username
+	useremail, _ := session.Values["Useremail"]
+	user, _ := models.ExistingUser(useremail.(string))
+	data["User"] = user.Name
 
 	if r.Method == http.MethodPost {
 
