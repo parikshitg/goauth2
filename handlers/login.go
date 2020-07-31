@@ -28,6 +28,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		msg, ok := LoginUser(email, password)
 		if !ok {
+
 			data["Flash"] = msg
 			err = page.Execute(w, data)
 			if err != nil {
@@ -40,6 +41,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		session, err := s.Store.Get(r, "auth-cookie")
 		if err != nil {
 			log.Println("Session Error:", err)
+			return
 		}
 		session.Values["authenticated"] = true
 		session.Save(r, w)

@@ -1,0 +1,18 @@
+package handlers
+
+import (
+	"net/http"
+
+	s "github.com/parikshitg/goauth2/sessions"
+)
+
+// Logout function
+func Logout(w http.ResponseWriter, r *http.Request) {
+	session, _ := s.Store.Get(r, "auth-cookie")
+
+	session.Values["authenticated"] = false
+	session.Options.MaxAge = -1
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+}

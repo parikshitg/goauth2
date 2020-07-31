@@ -36,6 +36,7 @@ func main() {
 	http.HandleFunc("/github/callback", h.GithubCallback)
 	http.HandleFunc("/dashboard", sessions.AuthenticatedUser(h.Dashboard))
 	http.HandleFunc("/register", sessions.UnauthenticatedUser(h.Register))
+	http.HandleFunc("/logout", sessions.AuthenticatedUser(h.Logout))
 
 	// Serving static files
 	http.Handle("/css/", http.StripPrefix("/css", http.FileServer(http.Dir("static/css"))))
