@@ -24,14 +24,14 @@ func CreateUser(name, email, password string) {
 }
 
 // Check if user exists in database
-func ExistingUser(email string) bool {
+func ExistingUser(email string) (string, bool) {
 
 	var user User
 	Db.Debug().Where("email = ?", email).Find(&user)
 	if user == (User{}) {
-		return false
+		return "", false
 	}
-	return true
+	return user.Password, true
 }
 
 // Read All Users from the database

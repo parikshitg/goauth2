@@ -6,12 +6,13 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title center purple-text">LOGIN</span>
+                        <p class="teal-text">{{ .Flash }}</p>
                         <form method="post" action="/login">
                             <div class="row">
                                 <div class="input-field col s12">
-                                <i class="material-icons prefix">person</i>
-                                    <input name="username" id="username" type="text" class="validate">
-                                    <label for="username">Username</label>
+                                <i class="material-icons prefix">email</i>
+                                    <input name="email" id="email" type="text" class="validate">
+                                    <label for="email">Email</label>
                                 </div>
                             </div> 
                             <div class="row">

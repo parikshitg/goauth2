@@ -54,7 +54,7 @@ func RegisterUser(name, email, password, password2 string) string {
 		return flash.Message
 	}
 
-	ok := models.ExistingUser(email)
+	_, ok := models.ExistingUser(email)
 	if ok {
 		flash.Message = "User Already Registered !!"
 		return flash.Message

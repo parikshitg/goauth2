@@ -4,6 +4,8 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/parikshitg/goauth2/models"
 )
 
 // Login handler
@@ -20,13 +22,49 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 
-		username := r.FormValue("username")
+		email := r.FormValue("email")
 		password := r.FormValue("password")
-		log.Println("username : ", username, "password : ", password)
+
+		msg, ok := LoginUser(email, password)
+		if !ok {
+			data["Flash"] = msg
+			err = page.Execute(w, data)
+			if err != nil {
+				log.Fatal("Execute:", err)
+			}
+			return
+		}
+
+		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 	}
 
 	err = page.Execute(w, data)
 	if err != nil {
 		log.Fatal("Execute:", err)
 	}
+}
+
+// Logins User
+func LoginUser(email, password string) (string, bool) {
+
+	if email == "" || password == "" {
+
+		flash.Message = "Fields Can not be empty !!"
+		return flash.Message, false
+	}
+
+	pass, exists := models.ExistingUser(email)
+	if !exists {
+
+		flash.Message = "Invalid Email !!"
+		return flash.Message, false
+	}
+
+	if password != pass {
+		flash.Message = "Invalid User !!"
+		return flash.Message, false
+	}
+
+	log.Println("Logged in Successfully")
+	return flash.Message, true
 }
