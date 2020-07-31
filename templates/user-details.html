@@ -1,0 +1,13 @@
+{{ template "header2.html" . }}
+
+<div class="container">
+	<h3>User Details</h3>
+	<br>
+	{{ with .UserDetails }}
+	<h3>Id: {{ .ID }}</h3><br>
+	<h3>Name: {{ .Name }}</h3><br>
+	<h3>Email: {{ .Email }}</h3><br>
+	{{ end }}
+</div>
+     <br>
+{{ template "footer.html" . }}

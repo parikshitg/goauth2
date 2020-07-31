@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	h "github.com/parikshitg/goauth2/handlers"
@@ -12,6 +13,8 @@ import (
 )
 
 func main() {
+
+	r := mux.NewRouter()
 
 	var err error
 	models.Db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=test sslmode=disable")
@@ -30,19 +33,20 @@ func main() {
 	models.Db.AutoMigrate(&models.User{})
 
 	// Routes
-	http.HandleFunc("/", h.Home)
-	http.HandleFunc("/login", sessions.UnauthenticatedUser(h.Login))
-	http.HandleFunc("/github/login", h.GithubLogin)
-	http.HandleFunc("/github/callback", h.GithubCallback)
-	http.HandleFunc("/user/all", sessions.AuthenticatedUser(h.Dashboard))
-	http.HandleFunc("/user/search", sessions.AuthenticatedUser(h.Search))
-	http.HandleFunc("/user/set_password", sessions.AuthenticatedUser(h.SetPasswordHandler))
-	http.HandleFunc("/register", sessions.UnauthenticatedUser(h.Register))
-	http.HandleFunc("/logout", sessions.AuthenticatedUser(h.Logout))
+	r.HandleFunc("/", h.Home)
+	r.HandleFunc("/login", sessions.UnauthenticatedUser(h.Login))
+	r.HandleFunc("/github/login", h.GithubLogin)
+	r.HandleFunc("/github/callback", h.GithubCallback)
+	r.HandleFunc("/user/all", sessions.AuthenticatedUser(h.Dashboard))
+	r.HandleFunc("/user/{id:[0-9]+}", sessions.AuthenticatedUser(h.UserDetailsHandler))
+	r.HandleFunc("/user/search", sessions.AuthenticatedUser(h.Search))
+	r.HandleFunc("/user/set_password", sessions.AuthenticatedUser(h.SetPasswordHandler))
+	r.HandleFunc("/register", sessions.UnauthenticatedUser(h.Register))
+	r.HandleFunc("/logout", sessions.AuthenticatedUser(h.Logout))
 
 	// Serving static files
 	http.Handle("/css/", http.StripPrefix("/css", http.FileServer(http.Dir("static/css"))))
 	http.Handle("/js/", http.StripPrefix("/js", http.FileServer(http.Dir("static/js"))))
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", r)
 }

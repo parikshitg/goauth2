@@ -47,3 +47,14 @@ func UsersTable() []User {
 func SetNewPass(email, pass string) {
 	Db.Debug().Table("users").Where("email = ?", email).Update("password", pass)
 }
+
+// Check if user details by id
+func UserDetails(id string) (User, bool) {
+
+	var user User
+	Db.Debug().Where("id = ?", id).Find(&user)
+	if user == (User{}) {
+		return User{}, false
+	}
+	return user, true
+}

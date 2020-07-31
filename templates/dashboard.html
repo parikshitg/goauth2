@@ -15,7 +15,7 @@
 		<tbody>
 			{{ range $i,$u := .Users }}
 			<tr>
-			    <td>{{ $u.ID }}</td>
+			    <td><a href="/user/{{ $u.ID }}">{{ $u.ID }}</a></td>
 			    <td>{{ $u.Name }}</td>
 			    <td>{{ $u.Email }}</td>
 			</tr>
