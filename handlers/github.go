@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/parikshitg/goauth2/models"
+	"github.com/parikshitg/goauth2/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
-	"github.com/parikshitg/goauth2/sessions"
 )
 
 // Github application client id and secret key
@@ -24,8 +25,9 @@ var config = &oauth2.Config{
 }
 
 type GitUser struct {
-	Name string `json:"name"`
+	Name  string `json:"name"`
 	Email string `json:"email"`
+	Url   string `json:"url"`
 }
 
 // Github Login handler
@@ -35,7 +37,7 @@ func GithubLogin(w http.ResponseWriter, r *http.Request) {
 	log.Println("state:", state)
 	url := config.AuthCodeURL(state)
 	log.Println("url:", url)
-	http.Redirect(w,r, url,http.StatusTemporaryRedirect)
+	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
 // Callback Handler
@@ -62,7 +64,7 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 
 	defer response.Body.Close()
 	contents, err := ioutil.ReadAll(response.Body)
-	
+
 	var gituser GitUser
 	err = json.Unmarshal(contents, &gituser)
 	if err != nil {
@@ -71,5 +73,18 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("gituser  : ", gituser)
 
-	http.Redirect(w,r ,"/dashboard", http.StatusSeeOther)
+	// Create User in Database
+	user := &models.User{Name: gituser.Name, Email: gituser.Email}
+	models.Db.Debug().Create(&user)
+
+	// setting up a session
+	session, err := sessions.Store.Get(r, "auth-cookie")
+	if err != nil {
+		log.Println("Session Error:", err)
+		return
+	}
+	session.Values["Useremail"] = gituser.Email
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/user/all", http.StatusSeeOther)
 }

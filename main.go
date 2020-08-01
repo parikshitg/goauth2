@@ -37,6 +37,8 @@ func main() {
 	r.HandleFunc("/login", sessions.UnauthenticatedUser(h.Login))
 	r.HandleFunc("/github/login", h.GithubLogin)
 	r.HandleFunc("/github/callback", h.GithubCallback)
+	r.HandleFunc("/linkedin/login", h.LinkedinLogin)
+	r.HandleFunc("/linkedin/callback", h.LinkedinCallback)
 	r.HandleFunc("/user/all", sessions.AuthenticatedUser(h.Dashboard))
 	r.HandleFunc("/user/{id:[0-9]+}", sessions.AuthenticatedUser(h.UserDetailsHandler))
 	r.HandleFunc("/user/search", sessions.AuthenticatedUser(h.Search))
@@ -45,8 +47,10 @@ func main() {
 	r.HandleFunc("/logout", sessions.AuthenticatedUser(h.Logout))
 
 	// Serving static files
-	http.Handle("/css/", http.StripPrefix("/css", http.FileServer(http.Dir("static/css"))))
-	http.Handle("/js/", http.StripPrefix("/js", http.FileServer(http.Dir("static/js"))))
+	fcss := http.FileServer(http.Dir("static/css"))
+	r.PathPrefix("/css/").Handler(http.StripPrefix("/css/", fcss))
+	fjs := http.FileServer(http.Dir("static/js"))
+	r.PathPrefix("/js/").Handler(http.StripPrefix("/js/", fjs))
 
 	http.ListenAndServe(":8080", r)
 }
