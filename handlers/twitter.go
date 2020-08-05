@@ -10,12 +10,13 @@ import (
 	oauth1Login "github.com/dghubble/gologin/oauth1"
 	"github.com/dghubble/oauth1"
 	twitterOAuth1 "github.com/dghubble/oauth1/twitter"
+	"github.com/parikshitg/goauth2/conf"
 	"github.com/parikshitg/goauth2/models"
 )
 
 var Oauth1Config = &oauth1.Config{
-	ConsumerKey:    "5wQgXq0udwjyHMCiOc5W5F2E2",
-	ConsumerSecret: "DvTmXUbz9wN9fLfgR2XJBLvLvAPxG8cL2M3TTXFGKqtcYJaC32",
+	ConsumerKey:    conf.TwitterConsumerKey,
+	ConsumerSecret: conf.TwitterConsumerSecret,
 	CallbackURL:    "http://localhost:8080/twitter/callback",
 	Endpoint:       twitterOAuth1.AuthorizeEndpoint,
 }

@@ -6,19 +6,16 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/parikshitg/goauth2/conf"
 	"github.com/parikshitg/goauth2/models"
 	"github.com/parikshitg/goauth2/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/linkedin"
 )
 
-// Linkedin application client id and secret key
-const linkedinClientID = "868h74ftndcy4z"
-const linkedinClientSecret = "iDl6UnlhKrkiM1sM"
-
 var lconfig = &oauth2.Config{
-	ClientID:     linkedinClientID,
-	ClientSecret: linkedinClientSecret,
+	ClientID:     conf.LinkedinClientID,
+	ClientSecret: conf.LinkedinClientSecret,
 	Endpoint:     linkedin.Endpoint,
 	RedirectURL:  "http://localhost:8080/linkedin/callback",
 	Scopes:       []string{"r_emailaddress", "r_liteprofile"},

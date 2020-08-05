@@ -6,19 +6,16 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/parikshitg/goauth2/conf"
 	"github.com/parikshitg/goauth2/models"
 	"github.com/parikshitg/goauth2/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
 
-// Github application client id and secret key
-const clientID = "7ca5db25b59a728eca66"
-const clientSecret = "fe0bffeafe45b057036d0ea9ffb619787eb38583"
-
 var config = &oauth2.Config{
-	ClientID:     clientID,
-	ClientSecret: clientSecret,
+	ClientID:     conf.GithubClientID,
+	ClientSecret: conf.GithubClientSecret,
 	Endpoint:     github.Endpoint,
 	RedirectURL:  "http://localhost:8080" + "/github/callback",
 	Scopes:       []string{"user"},
