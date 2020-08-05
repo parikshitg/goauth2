@@ -20,6 +20,13 @@ var Oauth1Config = &oauth1.Config{
 	Endpoint:       twitterOAuth1.AuthorizeEndpoint,
 }
 
+type TwitUser struct {
+	Username string `json:"username"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Location string `json:"location"`
+}
+
 func IssueSession() http.Handler {
 
 	fn := func(w http.ResponseWriter, r *http.Request) {
@@ -45,11 +52,6 @@ func IssueSession() http.Handler {
 			fmt.Println("Errr")
 			return
 		}
-
-		// fmt.Println("username : ", user.ScreenName)
-		// fmt.Println("name : ", user.Name)
-		// fmt.Println("email : ", user.Email)
-		// fmt.Println("name : ", user.ID)
 
 		tu := &TwitUser{Username: user.ScreenName, Name: user.Name, Email: user.Email, Location: user.Location}
 
@@ -80,11 +82,4 @@ func IssueSession() http.Handler {
 	}
 
 	return http.HandlerFunc(fn)
-}
-
-type TwitUser struct {
-	Username string
-	Name     string
-	Email    string
-	Location string
 }

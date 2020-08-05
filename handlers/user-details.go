@@ -51,12 +51,14 @@ func UserDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	data["GitUsername"] = md["login"]
 
 	md2, _ := mett.Linkedin.(map[string]interface{})
-
 	data["LFName"] = md2["localizedFirstName"]
 	data["LLName"] = md2["localizedLastName"]
 	data["LEmail"] = md2["email"]
 
-	log.Println("twitter : ", mett.Twitter)
+	md3, _ := mett.Twitter.(map[string]interface{})
+	data["TName"] = md3["name"]
+	data["TUsername"] = md3["username"]
+	data["TLocation"] = md3["location"]
 
 	err = page.Execute(w, data)
 	if err != nil {
