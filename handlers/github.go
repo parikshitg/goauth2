@@ -31,6 +31,12 @@ type GitUser struct {
 	Username string `json:"login"`
 }
 
+type Meta struct {
+	Github   interface{} `json:"github"`
+	Linkedin interface{} `json:"linkedin"`
+	Twitter  interface{} `json:"twitter"`
+}
+
 // Github Login handler
 func GithubLogin(w http.ResponseWriter, r *http.Request) {
 
@@ -76,25 +82,46 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 
 	gitMetaData := &GitUser{Name: gituser.Name, Email: gituser.Email, Username: gituser.Username, Url: gituser.Url}
 
-	m := make(map[string]interface{})
-	m["Github"] = gitMetaData
-
-	// Marshal map to store as a string into database
-	v, err := json.Marshal(m)
-	if err != nil {
-		log.Println("Marshal error: ", err)
-		return
-	}
-
-	user := &models.User{Name: gituser.Name, Email: gituser.Email, Meta: string(v)}
-
 	dbuser, present := models.ExistingUser(gituser.Email)
 	if present {
-		// If email already exists in the database
-		if dbuser.Meta == "null" {
+
+		var met Meta
+		err := json.Unmarshal([]byte(dbuser.Meta), &met)
+		if err != nil {
+			log.Println("unmarshal Error : ", err)
+			return
+		}
+
+		if met.Github == "" {
+
+			m := make(map[string]interface{})
+			m["Github"] = gitMetaData
+			m["Linkedin"] = met.Linkedin
+			m["Twitter"] = met.Twitter
+
+			// Marshal map to store as a string into database
+			v, err := json.Marshal(m)
+			if err != nil {
+				log.Println("Marshal error: ", err)
+				return
+			}
+
 			models.Db.Debug().Table("users").Where("email = ?", gituser.Email).Update("meta", v)
 		}
 	} else {
+
+		mm := make(map[string]interface{})
+		mm["Github"] = gitMetaData
+		mm["Linkedin"] = ""
+		mm["Twitter"] = ""
+		// Marshal map to store as a string into database
+		v, err := json.Marshal(mm)
+		if err != nil {
+			log.Println("Marshal error: ", err)
+			return
+		}
+
+		user := &models.User{Name: gituser.Name, Email: gituser.Email, Meta: string(v)}
 		// else create a new user
 		models.Db.Debug().Create(&user)
 	}

@@ -65,9 +65,7 @@ func RegisterUser(name, email, password, password2 string) string {
 		return flash.Message
 	}
 
-	var m map[string]interface{}
-
-	models.CreateUser(name, email, password, m)
+	models.CreateUser(name, email, password)
 	flash.Message = "Registered Successfully."
 
 	return flash.Message

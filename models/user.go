@@ -19,7 +19,12 @@ type User struct {
 }
 
 // Create User in Database
-func CreateUser(name, email, password string, m map[string]interface{}) {
+func CreateUser(name, email, password string) {
+
+	m := make(map[string]interface{})
+	m["Github"] = ""
+	m["Linkedin"] = ""
+	m["Twitter"] = ""
 
 	v, err := json.Marshal(m)
 	if err != nil {

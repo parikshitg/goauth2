@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 
+	"github.com/parikshitg/goauth2/models"
 	"github.com/parikshitg/goauth2/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/linkedin"
@@ -71,7 +71,6 @@ func LinkedinCallback(w http.ResponseWriter, r *http.Request) {
 	response2, err := client.Get("https://api.linkedin.com/v2/me")
 	defer response.Body.Close()
 	contents2, err := ioutil.ReadAll(response2.Body)
-	fmt.Fprintf(w, "%s\n", contents2)
 
 	var luser LinkedinUser
 	err = json.Unmarshal(contents2, &luser)
@@ -81,9 +80,66 @@ func LinkedinCallback(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("luser  : ", luser)
 
+	lMetaData := &LinkedinUser{Firstname: luser.Firstname, Lastname: luser.Lastname, Email: email.(string)}
+
+	dbuser, present := models.ExistingUser(email.(string))
+	if present {
+
+		var met Meta
+		err := json.Unmarshal([]byte(dbuser.Meta), &met)
+		if err != nil {
+			log.Println("unmarshal Error : ", err)
+			return
+		}
+
+		if met.Linkedin == "" {
+
+			m := make(map[string]interface{})
+			m["Github"] = met.Github
+			m["Linkedin"] = lMetaData
+			m["Twitter"] = met.Twitter
+
+			// Marshal map to store as a string into database
+			v, err := json.Marshal(m)
+			if err != nil {
+				log.Println("Marshal error: ", err)
+				return
+			}
+			models.Db.Debug().Table("users").Where("email = ?", email).Update("meta", v)
+		}
+	} else {
+
+		mm := make(map[string]interface{})
+		mm["Github"] = ""
+		mm["Linkedin"] = lMetaData
+		mm["Twitter"] = ""
+		// Marshal map to store as a string into database
+		v, err := json.Marshal(mm)
+		if err != nil {
+			log.Println("Marshal error: ", err)
+			return
+		}
+
+		user := &models.User{Name: luser.Firstname + " " + luser.Lastname, Email: email.(string), Meta: string(v)}
+
+		// else create a new user
+		models.Db.Debug().Create(&user)
+	}
+
+	// setting up a session (Login)
+	session, err := sessions.Store.Get(r, "auth-cookie")
+	if err != nil {
+		log.Println("Session Error:", err)
+		return
+	}
+	session.Values["Useremail"] = email
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/user/all", http.StatusSeeOther)
 }
 
 type LinkedinUser struct {
 	Firstname string `json:"localizedFirstName"`
 	Lastname  string `json:"localizedLastName"`
+	Email     string
 }
