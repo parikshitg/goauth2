@@ -25,9 +25,10 @@ var config = &oauth2.Config{
 }
 
 type GitUser struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Url   string `json:"url"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Url      string `json:"url"`
+	Username string `json:"login"`
 }
 
 // Github Login handler
@@ -40,7 +41,7 @@ func GithubLogin(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 }
 
-// Callback Handler
+// Github Callback Handler
 func GithubCallback(w http.ResponseWriter, r *http.Request) {
 
 	state := r.FormValue("state")
@@ -65,19 +66,40 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 	defer response.Body.Close()
 	contents, err := ioutil.ReadAll(response.Body)
 
+	// Unmarshal contents into type GitUser
 	var gituser GitUser
 	err = json.Unmarshal(contents, &gituser)
 	if err != nil {
 		log.Println("unmarshal error : ")
 		return
 	}
-	log.Println("gituser  : ", gituser)
 
-	// Create User in Database
-	user := &models.User{Name: gituser.Name, Email: gituser.Email}
-	models.Db.Debug().Create(&user)
+	gitMetaData := &GitUser{Name: gituser.Name, Email: gituser.Email, Username: gituser.Username, Url: gituser.Url}
 
-	// setting up a session
+	m := make(map[string]interface{})
+	m["Github"] = gitMetaData
+
+	// Marshal map to store as a string into database
+	v, err := json.Marshal(m)
+	if err != nil {
+		log.Println("Marshal error: ", err)
+		return
+	}
+
+	user := &models.User{Name: gituser.Name, Email: gituser.Email, Meta: string(v)}
+
+	dbuser, present := models.ExistingUser(gituser.Email)
+	if present {
+		// If email already exists in the database
+		if dbuser.Meta == "null" {
+			models.Db.Debug().Table("users").Where("email = ?", gituser.Email).Update("meta", v)
+		}
+	} else {
+		// else create a new user
+		models.Db.Debug().Create(&user)
+	}
+
+	// setting up a session (Login)
 	session, err := sessions.Store.Get(r, "auth-cookie")
 	if err != nil {
 		log.Println("Session Error:", err)

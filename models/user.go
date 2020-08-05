@@ -1,6 +1,9 @@
 package models
 
 import (
+	"encoding/json"
+	"log"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -16,9 +19,15 @@ type User struct {
 }
 
 // Create User in Database
-func CreateUser(name, email, password string) {
+func CreateUser(name, email, password string, m map[string]interface{}) {
 
-	user := &User{Name: name, Email: email, Password: password}
+	v, err := json.Marshal(m)
+	if err != nil {
+		log.Println("Marshal error: ", err)
+		return
+	}
+
+	user := &User{Name: name, Email: email, Password: password, Meta: string(v)}
 
 	Db.Debug().Create(&user)
 }

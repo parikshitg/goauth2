@@ -10,6 +10,8 @@ import (
 	h "github.com/parikshitg/goauth2/handlers"
 	"github.com/parikshitg/goauth2/models"
 	"github.com/parikshitg/goauth2/sessions"
+
+	"github.com/dghubble/gologin/twitter"
 )
 
 func main() {
@@ -39,6 +41,8 @@ func main() {
 	r.HandleFunc("/github/callback", h.GithubCallback)
 	r.HandleFunc("/linkedin/login", h.LinkedinLogin)
 	r.HandleFunc("/linkedin/callback", h.LinkedinCallback)
+	r.Handle("/twitter/login", twitter.LoginHandler(h.Oauth1Config, nil))
+	r.Handle("/twitter/callback", twitter.CallbackHandler(h.Oauth1Config, h.IssueSession(), nil))
 	r.HandleFunc("/user/all", sessions.AuthenticatedUser(h.Dashboard))
 	r.HandleFunc("/user/{id:[0-9]+}", sessions.AuthenticatedUser(h.UserDetailsHandler))
 	r.HandleFunc("/user/search", sessions.AuthenticatedUser(h.Search))

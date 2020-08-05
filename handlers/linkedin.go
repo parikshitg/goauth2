@@ -61,9 +61,9 @@ func LinkedinCallback(w http.ResponseWriter, r *http.Request) {
 	defer response.Body.Close()
 	contents, err := ioutil.ReadAll(response.Body)
 
-	var p map[string]interface{}
-	json.Unmarshal(contents, &p)
-	email := p["elements"].([]interface{})[0].(map[string]interface{})["handle~"].(map[string]interface{})["emailAddress"]
+	var u map[string]interface{}
+	json.Unmarshal(contents, &u)
+	email := u["elements"].([]interface{})[0].(map[string]interface{})["handle~"].(map[string]interface{})["emailAddress"]
 
 	log.Println("email : ", email)
 
