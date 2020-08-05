@@ -26,47 +26,84 @@ func SetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	user, _ := models.ExistingUser(useremail.(string))
 	data["User"] = user.Name
 
-	if r.Method == http.MethodPost {
+	if user.Password != "" {
+		data["Pass"] = true
 
-		password := r.FormValue("password")
-		password2 := r.FormValue("password2")
-		password3 := r.FormValue("password3")
+		if r.Method == http.MethodPost {
 
-		if password == "" || password2 == "" || password3 == "" {
+			password := r.FormValue("password")
+			password2 := r.FormValue("password2")
+			password3 := r.FormValue("password3")
 
-			data["Flash"] = "Fields can not be Empty !!"
+			if password == "" || password2 == "" || password3 == "" {
 
-			err = page.Execute(w, data)
-			if err != nil {
-				log.Fatal("Execute:", err)
+				data["Flash"] = "Fields can not be Empty !!"
+
+				err = page.Execute(w, data)
+				if err != nil {
+					log.Fatal("Execute:", err)
+				}
+				return
 			}
-			return
+
+			if password2 != password3 {
+
+				data["Flash"] = "New Passwords Did not match !!"
+
+				err = page.Execute(w, data)
+				if err != nil {
+					log.Fatal("Execute:", err)
+				}
+				return
+			}
+
+			if password != user.Password {
+
+				data["Flash"] = "Invalid Current Password !!"
+
+				err = page.Execute(w, data)
+				if err != nil {
+					log.Fatal("Execute:", err)
+				}
+				return
+			}
+
+			models.SetNewPass(useremail.(string), password2)
+			data["Flash"] = "Password Updated."
 		}
 
-		if password2 != password3 {
+	} else {
 
-			data["Flash"] = "New Passwords Did not match !!"
+		if r.Method == http.MethodPost {
 
-			err = page.Execute(w, data)
-			if err != nil {
-				log.Fatal("Execute:", err)
+			password2 := r.FormValue("password2")
+			password3 := r.FormValue("password3")
+
+			if password2 == "" || password3 == "" {
+
+				data["Flash"] = "Fields can not be Empty !!"
+
+				err = page.Execute(w, data)
+				if err != nil {
+					log.Fatal("Execute:", err)
+				}
+				return
 			}
-			return
-		}
 
-		if password != user.Password {
+			if password2 != password3 {
 
-			data["Flash"] = "Invalid Current Password !!"
+				data["Flash"] = "New Passwords Did not match !!"
 
-			err = page.Execute(w, data)
-			if err != nil {
-				log.Fatal("Execute:", err)
+				err = page.Execute(w, data)
+				if err != nil {
+					log.Fatal("Execute:", err)
+				}
+				return
 			}
-			return
-		}
 
-		models.SetNewPass(useremail.(string), password2)
-		data["Flash"] = "Password Updated."
+			models.SetNewPass(useremail.(string), password2)
+			data["Flash"] = "Password Updated."
+		}
 	}
 
 	err = page.Execute(w, data)
