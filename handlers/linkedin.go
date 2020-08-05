@@ -141,5 +141,5 @@ func LinkedinCallback(w http.ResponseWriter, r *http.Request) {
 type LinkedinUser struct {
 	Firstname string `json:"localizedFirstName"`
 	Lastname  string `json:"localizedLastName"`
-	Email     string
+	Email     string `json:"email"`
 }

@@ -1,13 +1,54 @@
 {{ template "header2.html" . }}
-
+<main>
 <div class="container">
-	<h3>User Details</h3>
 	<br>
-	{{ with .UserDetails }}
-	<h3>Id: {{ .ID }}</h3><br>
-	<h3>Name: {{ .Name }}</h3><br>
-	<h3>Email: {{ .Email }}</h3><br>
-	{{ end }}
+	<h5 class="center"><u>User Details</u></h5>
+	<br>
+
+	<div class="center">
+		{{ with .UserDetails }}
+			<h6><b>Id :</b> {{ .ID }}</h6>
+			<h6><b>Name : </b> {{ .Name }}</h6>
+			<h6><b>Email : </b> {{ .Email }}</h6>
+		{{ end }}
+    </div>    
+    <br>
+
+      <div class="row">
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center dark-text"><i class="fab fa-github"></i></h2>
+            <h5 class="center"><u>Github</u></h5>
+         	<div class="center">
+	         	<p><b>Name</b>     : {{ .GitName }}</p>
+				<p><b>Username</b> : {{ .GitUsername }}</p>
+				<p><b>Url</b>      : {{ .GitUrl }}</p>
+          	</div>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center blue-text text-darken-4"><i class="fab fa-linkedin"></i></h2>
+            <h5 class="center"><u>Linkedin</u></h5>
+            <div class="center">
+            	<p><b>Firstname:</b> {{ .LFName }}</p>
+				<p><b>Lastname:</b> {{ .LLName }}</p>
+          	</div>
+          </div>
+        </div>
+
+        <div class="col s12 m4">
+          <div class="icon-block">
+            <h2 class="center light-blue-text"><i class="fab fa-twitter"></i></h2>
+            <h5 class="center"><u>Twitter</u></h5>
+
+            <p class="light"></p>
+          </div>
+        </div>
+      </div>
+
 </div>
      <br>
+ </main>
 {{ template "footer.html" . }}

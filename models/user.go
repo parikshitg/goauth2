@@ -52,7 +52,7 @@ func ExistingUser(email string) (User, bool) {
 func UsersTable() []User {
 
 	var users []User
-	Db.Debug().Select("id, name, email").Find(&users)
+	Db.Debug().Select("id, name, email, meta").Find(&users)
 
 	return users
 }
