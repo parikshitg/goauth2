@@ -31,12 +31,6 @@ type GitUser struct {
 	Username string `json:"login"`
 }
 
-type Meta struct {
-	Github   interface{} `json:"github"`
-	Linkedin interface{} `json:"linkedin"`
-	Twitter  interface{} `json:"twitter"`
-}
-
 // Github Login handler
 func GithubLogin(w http.ResponseWriter, r *http.Request) {
 
@@ -94,46 +88,16 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 
 		if met.Github == "" {
 
-			m := make(map[string]interface{})
-			m["Github"] = gitMetaData
-			m["Linkedin"] = met.Linkedin
-			m["Twitter"] = met.Twitter
-
-			// Marshal map to store as a string into database
-			v, err := json.Marshal(m)
-			if err != nil {
-				log.Println("Marshal error: ", err)
-				return
-			}
-
-			models.Db.Debug().Table("users").Where("email = ?", gituser.Email).Update("meta", v)
+			val := MakeMetaMap(gitMetaData, met.Linkedin, met.Twitter)
+			models.Db.Debug().Table("users").Where("email = ?", gituser.Email).Update("meta", val)
 		}
 	} else {
 
-		mm := make(map[string]interface{})
-		mm["Github"] = gitMetaData
-		mm["Linkedin"] = ""
-		mm["Twitter"] = ""
-		// Marshal map to store as a string into database
-		v, err := json.Marshal(mm)
-		if err != nil {
-			log.Println("Marshal error: ", err)
-			return
-		}
-
-		user := &models.User{Name: gituser.Name, Email: gituser.Email, Meta: string(v)}
-		// else create a new user
+		val := MakeMetaMap(gitMetaData, "", "")
+		user := &models.User{Name: gituser.Name, Email: gituser.Email, Meta: string(val)}
 		models.Db.Debug().Create(&user)
 	}
 
-	// setting up a session (Login)
-	session, err := sessions.Store.Get(r, "auth-cookie")
-	if err != nil {
-		log.Println("Session Error:", err)
-		return
-	}
-	session.Values["Useremail"] = gituser.Email
-	session.Save(r, w)
-
+	SetSession(gituser.Email, w, r)
 	http.Redirect(w, r, "/user/all", http.StatusSeeOther)
 }

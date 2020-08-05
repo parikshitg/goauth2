@@ -24,6 +24,12 @@ var lconfig = &oauth2.Config{
 	Scopes:       []string{"r_emailaddress", "r_liteprofile"},
 }
 
+type LinkedinUser struct {
+	Firstname string `json:"localizedFirstName"`
+	Lastname  string `json:"localizedLastName"`
+	Email     string `json:"email"`
+}
+
 // Linkedin Login Handler
 func LinkedinLogin(w http.ResponseWriter, r *http.Request) {
 	state := sessions.NewOauth2State()
@@ -65,8 +71,6 @@ func LinkedinCallback(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(contents, &u)
 	email := u["elements"].([]interface{})[0].(map[string]interface{})["handle~"].(map[string]interface{})["emailAddress"]
 
-	log.Println("email : ", email)
-
 	// Api for name
 	response2, err := client.Get("https://api.linkedin.com/v2/me")
 	defer response.Body.Close()
@@ -94,52 +98,16 @@ func LinkedinCallback(w http.ResponseWriter, r *http.Request) {
 
 		if met.Linkedin == "" {
 
-			m := make(map[string]interface{})
-			m["Github"] = met.Github
-			m["Linkedin"] = lMetaData
-			m["Twitter"] = met.Twitter
-
-			// Marshal map to store as a string into database
-			v, err := json.Marshal(m)
-			if err != nil {
-				log.Println("Marshal error: ", err)
-				return
-			}
-			models.Db.Debug().Table("users").Where("email = ?", email).Update("meta", v)
+			val := MakeMetaMap(met.Github, lMetaData, met.Twitter)
+			models.Db.Debug().Table("users").Where("email = ?", email).Update("meta", val)
 		}
 	} else {
-
-		mm := make(map[string]interface{})
-		mm["Github"] = ""
-		mm["Linkedin"] = lMetaData
-		mm["Twitter"] = ""
-		// Marshal map to store as a string into database
-		v, err := json.Marshal(mm)
-		if err != nil {
-			log.Println("Marshal error: ", err)
-			return
-		}
-
-		user := &models.User{Name: luser.Firstname + " " + luser.Lastname, Email: email.(string), Meta: string(v)}
-
-		// else create a new user
+		// Create a new user
+		val := MakeMetaMap("", lMetaData, "")
+		user := &models.User{Name: luser.Firstname + " " + luser.Lastname, Email: email.(string), Meta: string(val)}
 		models.Db.Debug().Create(&user)
 	}
 
-	// setting up a session (Login)
-	session, err := sessions.Store.Get(r, "auth-cookie")
-	if err != nil {
-		log.Println("Session Error:", err)
-		return
-	}
-	session.Values["Useremail"] = email
-	session.Save(r, w)
-
+	SetSession(email.(string), w, r)
 	http.Redirect(w, r, "/user/all", http.StatusSeeOther)
-}
-
-type LinkedinUser struct {
-	Firstname string `json:"localizedFirstName"`
-	Lastname  string `json:"localizedLastName"`
-	Email     string `json:"email"`
 }

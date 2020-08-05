@@ -31,7 +31,11 @@ func UserDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	user, _ := models.ExistingUser(useremail.(string))
 	data["User"] = user.Name
 
-	userDetail, _ := models.UserDetails(id)
+	userDetail, ok := models.UserDetails(id)
+	if !ok {
+		http.Redirect(w, r, "/", http.StatusBadRequest)
+		return
+	}
 	data["UserDetails"] = userDetail
 
 	var mett Meta
@@ -41,24 +45,16 @@ func UserDetailsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	md, _ := mett.Github.(map[string]interface{})
-	log.Println("git name : ", md["name"])
-	log.Println("git Email : ", md["email"])
-	log.Println("git Url : ", md["url"])
-	log.Println("git Username : ", md["login"])
-
 	data["GitName"] = md["name"]
 	data["GitEmail"] = md["email"]
 	data["GitUrl"] = md["url"]
 	data["GitUsername"] = md["login"]
 
-	mdd, _ := mett.Linkedin.(map[string]interface{})
-	log.Println("linkedin First Name : ", mdd["localizedFirstName"])
-	log.Println("linkedin Last Name : ", mdd["localizedLastName"])
-	log.Println("linkedin email : ", mdd["email"])
+	md2, _ := mett.Linkedin.(map[string]interface{})
 
-	data["LFName"] = mdd["localizedFirstName"]
-	data["LLName"] = mdd["localizedLastName"]
-	data["LEmail"] = mdd["email"]
+	data["LFName"] = md2["localizedFirstName"]
+	data["LLName"] = md2["localizedLastName"]
+	data["LEmail"] = md2["email"]
 
 	log.Println("twitter : ", mett.Twitter)
 

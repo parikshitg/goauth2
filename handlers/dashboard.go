@@ -30,8 +30,6 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	userList := models.UsersTable()
 	data["Users"] = userList
 
-	log.Println("Userslist: ", userList)
-
 	err = page.Execute(w, data)
 	if err != nil {
 		log.Fatal("Execute:", err)

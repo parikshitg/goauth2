@@ -1,13 +1,16 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/dghubble/gologin/twitter"
+	t "github.com/dghubble/go-twitter/twitter"
+	oauth1Login "github.com/dghubble/gologin/oauth1"
 	"github.com/dghubble/oauth1"
 	twitterOAuth1 "github.com/dghubble/oauth1/twitter"
-	"github.com/dghubble/sessions"
+	"github.com/parikshitg/goauth2/models"
 )
 
 var Oauth1Config = &oauth1.Config{
@@ -17,34 +20,71 @@ var Oauth1Config = &oauth1.Config{
 	Endpoint:       twitterOAuth1.AuthorizeEndpoint,
 }
 
-const (
-	sessionName     = "example-twtter-app"
-	sessionSecret   = "example cookie signing secret"
-	sessionUserKey  = "twitterID"
-	sessionUsername = "twitterUsername"
-)
-
-// sessionStore encodes and decodes session data stored in signed cookies
-var sessionStore = sessions.NewCookieStore([]byte(sessionSecret), nil)
-
-// issueSession issues a cookie session after successful Twitter login
 func IssueSession() http.Handler {
-	fmt.Println("Executed issues session")
-	fn := func(w http.ResponseWriter, req *http.Request) {
-		fmt.Println("inside handler ")
-		ctx := req.Context()
-		twitterUser, err := twitter.UserFromContext(ctx)
+
+	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		ctx := r.Context()
+		accessToken, accessSecret, err := oauth1Login.AccessTokenFromContext(ctx)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			fmt.Println("err")
 			return
 		}
-		fmt.Println("name : ", twitterUser.ScreenName)
-		// 2. Implement a success handler to issue some form of session
-		session := sessionStore.New(sessionName)
-		session.Values[sessionUserKey] = twitterUser.ID
-		session.Values[sessionUsername] = twitterUser.ScreenName
-		session.Save(w)
-		http.Redirect(w, req, "/register", http.StatusFound)
+
+		httpClient := Oauth1Config.Client(ctx, oauth1.NewToken(accessToken, accessSecret))
+		twitterClient := t.NewClient(httpClient)
+		accountVerifyParams := &t.AccountVerifyParams{
+			IncludeEntities: t.Bool(true),
+			SkipStatus:      t.Bool(false),
+			IncludeEmail:    t.Bool(true),
+		}
+
+		user, _, err := twitterClient.Accounts.VerifyCredentials(accountVerifyParams)
+
+		if err != nil {
+			fmt.Println("Errr")
+			return
+		}
+
+		// fmt.Println("username : ", user.ScreenName)
+		// fmt.Println("name : ", user.Name)
+		// fmt.Println("email : ", user.Email)
+		// fmt.Println("name : ", user.ID)
+
+		tu := &TwitUser{Username: user.ScreenName, Name: user.Name, Email: user.Email, Location: user.Location}
+
+		dbuser, present := models.ExistingUser(user.Email)
+		if present {
+
+			var met Meta
+			err := json.Unmarshal([]byte(dbuser.Meta), &met)
+			if err != nil {
+				log.Println("unmarshal Error : ", err)
+				return
+			}
+
+			if met.Twitter == "" {
+
+				val := MakeMetaMap(met.Github, met.Linkedin, tu)
+				models.Db.Debug().Table("users").Where("email = ?", user.Email).Update("meta", val)
+			}
+		} else {
+
+			val := MakeMetaMap("", "", tu)
+			user := &models.User{Name: user.Name, Email: user.Email, Meta: string(val)}
+			models.Db.Debug().Create(&user)
+		}
+
+		SetSession(user.Email, w, r)
+		http.Redirect(w, r, "/user/all", http.StatusSeeOther)
 	}
+
 	return http.HandlerFunc(fn)
+}
+
+type TwitUser struct {
+	Username string
+	Name     string
+	Email    string
+	Location string
 }
