@@ -14,6 +14,24 @@ import (
 	"goauth2/sessions"
 )
 
+func init() {
+
+	if conf.GithubClientID == "" || conf.GithubClientSecret == "" {
+		log.Fatal("Empty Github API KEYS!! Please set Keys in conf.go")
+		return
+	}
+
+	if conf.LinkedinClientID == "" || conf.LinkedinClientSecret == "" {
+		log.Fatal("Empty Linkedin API KEYS!! Please set Keys in conf.go")
+		return
+	}
+
+	if conf.TwitterConsumerKey == "" || conf.TwitterConsumerSecret == "" {
+		log.Fatal("Empty Twitter API KEYS!! Please set Keys in conf.go")
+		return
+	}
+}
+
 func main() {
 
 	r := mux.NewRouter()
