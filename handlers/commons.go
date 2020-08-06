@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/parikshitg/goauth2/sessions"
+	"goauth2/sessions"
 )
 
 type Meta struct {

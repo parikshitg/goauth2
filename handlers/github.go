@@ -6,9 +6,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/parikshitg/goauth2/conf"
-	"github.com/parikshitg/goauth2/models"
-	"github.com/parikshitg/goauth2/sessions"
+	"goauth2/conf"
+	"goauth2/models"
+	"goauth2/sessions"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )
@@ -75,7 +75,7 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 
 	dbuser, present := models.ExistingUser(gituser.Email)
 	if present {
-
+		// If user is existing in database
 		var met Meta
 		err := json.Unmarshal([]byte(dbuser.Meta), &met)
 		if err != nil {
@@ -84,12 +84,12 @@ func GithubCallback(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if met.Github == "" {
-
+			// If User's Github meta data is empty, add meta data
 			val := MakeMetaMap(gitMetaData, met.Linkedin, met.Twitter)
 			models.Db.Debug().Table("users").Where("email = ?", gituser.Email).Update("meta", val)
 		}
 	} else {
-
+		// Create a new User
 		val := MakeMetaMap(gitMetaData, "", "")
 		user := &models.User{Name: gituser.Name, Email: gituser.Email, Meta: string(val)}
 		models.Db.Debug().Create(&user)

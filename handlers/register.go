@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/parikshitg/goauth2/models"
+	"goauth2/models"
 )
 
 type Flash struct {

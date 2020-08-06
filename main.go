@@ -4,14 +4,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/dghubble/gologin/twitter"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	h "github.com/parikshitg/goauth2/handlers"
-	"github.com/parikshitg/goauth2/models"
-	"github.com/parikshitg/goauth2/sessions"
-
-	"github.com/dghubble/gologin/twitter"
+	"goauth2/conf"
+	h "goauth2/handlers"
+	"goauth2/models"
+	"goauth2/sessions"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	r := mux.NewRouter()
 
 	var err error
-	models.Db, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=test sslmode=disable")
+	models.Db, err = gorm.Open(conf.Db, "host="+conf.Dbhost+" port="+conf.Dbport+" user="+conf.Dbuser+" dbname="+conf.Dbname+" sslmode=disable")
 	if err != nil {
 
 		log.Println("failed to connect database:  err : ", err)

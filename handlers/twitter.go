@@ -10,8 +10,8 @@ import (
 	oauth1Login "github.com/dghubble/gologin/oauth1"
 	"github.com/dghubble/oauth1"
 	twitterOAuth1 "github.com/dghubble/oauth1/twitter"
-	"github.com/parikshitg/goauth2/conf"
-	"github.com/parikshitg/goauth2/models"
+	"goauth2/conf"
+	"goauth2/models"
 )
 
 var Oauth1Config = &oauth1.Config{

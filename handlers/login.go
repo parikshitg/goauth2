@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/parikshitg/goauth2/models"
+	"goauth2/models"
 )
 
 // Login handler
@@ -67,7 +67,7 @@ func LoginUser(email, password string) (string, bool) {
 	}
 
 	if password != user.Password {
-		flash.Message = "Invalid User !!"
+		flash.Message = "Invalid Password !!"
 		return flash.Message, false
 	}
 

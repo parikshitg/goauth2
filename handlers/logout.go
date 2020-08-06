@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	s "github.com/parikshitg/goauth2/sessions"
+	s "goauth2/sessions"
 )
 
 // Logout function
