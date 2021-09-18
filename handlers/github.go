@@ -6,9 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"goauth2/conf"
-	"goauth2/models"
-	"goauth2/sessions"
+	"github.com/parikshitg/goauth2/conf"
+	"github.com/parikshitg/goauth2/models"
+	"github.com/parikshitg/goauth2/sessions"
+
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
 )

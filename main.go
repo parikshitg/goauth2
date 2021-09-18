@@ -4,14 +4,15 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/parikshitg/goauth2/conf"
+	h "github.com/parikshitg/goauth2/handlers"
+	"github.com/parikshitg/goauth2/models"
+	"github.com/parikshitg/goauth2/sessions"
+
 	"github.com/dghubble/gologin/twitter"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"goauth2/conf"
-	h "goauth2/handlers"
-	"goauth2/models"
-	"goauth2/sessions"
 )
 
 func init() {

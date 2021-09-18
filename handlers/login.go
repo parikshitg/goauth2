@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"goauth2/models"
+	"github.com/parikshitg/goauth2/models"
 )
 
 // Login handler

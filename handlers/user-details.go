@@ -7,8 +7,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"goauth2/models"
-	s "goauth2/sessions"
+
+	"github.com/parikshitg/goauth2/models"
+	s "github.com/parikshitg/goauth2/sessions"
 )
 
 // UserDetailsHandler Handler

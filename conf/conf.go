@@ -1,20 +1,22 @@
 package conf
 
-// Github application client id and secret key
-const GithubClientID = ""
-const GithubClientSecret = ""
+const (
+	// Github application client id and secret key
+	GithubClientID     = ""
+	GithubClientSecret = ""
 
-// Linkedin application client id and secret key
-const LinkedinClientID = ""
-const LinkedinClientSecret = ""
+	// Linkedin application client id and secret key
+	LinkedinClientID     = ""
+	LinkedinClientSecret = ""
 
-// Twiiter application client id and secret key
-const TwitterConsumerKey = ""
-const TwitterConsumerSecret = ""
+	// Twiiter application client id and secret key
+	TwitterConsumerKey    = ""
+	TwitterConsumerSecret = ""
 
-// Database configuration
-const Db = "postgres"
-const Dbhost = "localhost"
-const Dbport = "5432"
-const Dbname = "test"
-const Dbuser = "postgres"
+	// Database configuration
+	Db     = "postgres"
+	Dbhost = "localhost"
+	Dbport = "5432"
+	Dbname = "test"
+	Dbuser = "postgres"
+)
